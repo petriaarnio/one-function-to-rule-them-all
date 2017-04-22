@@ -1,40 +1,80 @@
 (ns one-function-to-rule-them-all)
 
 (defn concat-elements [a-seq]
-  :-)
+  (reduce concat [] a-seq))
 
 (defn str-cat [a-seq]
-  :-)
+  (let [helper (fn [str1 str2]
+                 (concat str1 " " str2))]
+    (if (not (empty? a-seq))
+      (apply str (reduce helper a-seq))
+      "")))
 
 (defn my-interpose [x a-seq]
-  [:-])
+  (let [helper (fn [eka toka]
+                 (if (empty? eka)
+                   (conj [] toka)
+                   (conj eka x toka)))]
+    (sequence (reduce helper [] a-seq))))
 
 (defn my-count [a-seq]
-  :-)
+  (let [counter (fn [count e]
+                  (if (not (= e nil))
+                    (inc count)
+                    count))]
+    (reduce counter 0 a-seq)))
 
 (defn my-reverse [a-seq]
-  [:-])
+  (let [reverser (fn [a b]
+                   (cons b a))]
+    (reduce reverser '() a-seq)))
 
 (defn min-max-element [a-seq]
-  [:-])
+  (let [min-max (fn [acc a]
+                  (let [min (get acc 0)
+                        max (get acc 1)]
+                    (cond
+                      (and (= min nil) (= max nil)) (conj acc a a)
+                      (or (< a min)) (assoc acc 0 a)
+                      (or (= max nil) (> a max)) (assoc acc 1 a)
+                    :else acc)))]
+    (reduce min-max [] a-seq)))
 
 (defn insert [sorted-seq n]
-  [:-])
+  (let [seqn (cons n '())]
+    (loop [acc '()
+           x-seq sorted-seq]
+      (let [first-x (first x-seq)]
+        (cond
+          ;;(empty? sorted-seq) seqn
+          (empty? x-seq) (concat acc seqn)
+          (<= n first-x) (concat acc seqn x-seq)
+          :else (recur (concat acc (cons first-x '())) (rest x-seq)))))))
 
 (defn insertion-sort [a-seq]
-  [:-])
+  (reduce insert '() a-seq))
 
 (defn parity [a-seq]
-  [:-])
+  (let [toggle (fn [a-set elem]
+                (if (contains? a-set elem)
+                  (disj a-set elem)
+                  (conj a-set elem)))]
+  (reduce toggle (set []) a-seq)))
 
-(defn minus [x]
-  :-)
+(defn minus
+  ([x] (- 0 x))
+  ([x y] (- x y)))
 
-(defn count-params [x]
-  :-)
+(defn count-params
+  ([& more]
+   (count more)))
 
-(defn my-* [x]
-  :-)
+(defn my-*
+  ([] 1)
+  ([x] x)
+  ([x y] (* x y))
+  ([x y & more]
+   (reduce my-* (my-* x y) more)))
 
 (defn pred-and [x]
   (fn [x] :-))
