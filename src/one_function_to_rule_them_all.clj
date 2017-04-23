@@ -76,8 +76,26 @@
   ([x y & more]
    (reduce my-* (my-* x y) more)))
 
-(defn pred-and [x]
-  (fn [x] :-))
+(defn pred-and
+  ([] (fn [x] true))
+  ([p1] (fn [x] (p1 x)))
+  ([p1 p2] (fn [x] (and (p1 x) (p2 x))))
+  ([p1 p2 & more]
+   (fn [x] ((reduce pred-and (pred-and p1 p2) more) x))))
 
-(defn my-map [f a-seq]
-  [:-])
+(defn my-map
+  ([f a-seq]
+   (let [helper (fn [acc e]
+                  (concat acc (cons (f e) '())))]
+     (reduce helper '() a-seq)))
+  ([f a b & more]
+    (let [helper2 (fn [a-seq b-seq]
+                   (loop [acca '()
+                     aseq a-seq
+                     bseq b-seq]
+                      (let [aelem (first aseq)
+                            belem (first bseq)]
+                        (if (or (= aelem nil) (= belem nil))
+                          acca
+                          (recur (concat acca (cons (f aelem belem) '())) (next aseq) (next bseq))))))]
+     (reduce helper2 (helper2 a b) more))))
